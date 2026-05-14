@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from pylabrobot.liquid_handling import LiquidHandler
@@ -65,3 +66,40 @@ class ChatterboxBackendTests(unittest.IsolatedAsyncioTestCase):
 
   async def test_move(self):
     await self.lh.move_resource(self.plate, Coordinate(0, 0, 0))
+
+  async def test_export_for_simulation(self):
+    await self.lh.pick_up_tips(self.tip_rack["A1"])
+    await self.lh.aspirate(self.plate["A1"], vols=[10])
+
+    export = self.backend.export_for_simulation()
+    json.dumps(export)
+
+    self.assertEqual(export["deck"]["name"], "deck")
+    child_names = [child["name"] for child in export["deck"]["children"]]
+    self.assertIn("tip_rack", child_names)
+    self.assertIn("plate", child_names)
+
+    operation_events = [event for event in export["events"] if event["event"] == "operation"]
+    self.assertTrue(any(event["action"] == "pick_up_tips" for event in operation_events))
+    self.assertTrue(any(event["action"] == "aspirate" for event in operation_events))
+
+    instruction_events = [event for event in export["events"] if event["event"] == "instruction"]
+    self.assertTrue(any(event["instruction"] == "move_xy" for event in instruction_events))
+    self.assertTrue(any(event["instruction"] == "aspirate" for event in instruction_events))
+
+  async def test_compact_export_for_simulation(self):
+    await self.lh.pick_up_tips(self.tip_rack["A1"])
+    await self.lh.aspirate(self.plate["A1"], vols=[10])
+
+    export = self.backend.export_for_simulation(compact=True)
+    json.dumps(export)
+
+    self.assertEqual(export["deck"]["root"], "deck")
+    self.assertIn("tip_rack", export["deck"]["resources"])
+    self.assertIn("plate_well_A1", export["deck"]["resources"])
+
+    operation_events = [event for event in export["events"] if event["event"] == "operation"]
+    aspiration = next(event for event in operation_events if event["action"] == "aspirate")
+    self.assertEqual(aspiration["channels"][0]["resource"], "plate_well_A1")
+    self.assertEqual(len(aspiration["channels"][0]["target"]), 3)
+    self.assertNotIn("resource_origin", aspiration["channels"][0])

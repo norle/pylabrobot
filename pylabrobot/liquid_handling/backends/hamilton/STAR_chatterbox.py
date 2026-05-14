@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from typing import Dict, List, Literal, Optional, Union
 
 from pylabrobot.liquid_handling.backends import LiquidHandlerBackend
+from pylabrobot.liquid_handling.backends.chatterbox_trace import ChatterboxTraceMixin
 from pylabrobot.liquid_handling.backends.hamilton.STAR_backend import (
   DriveConfiguration,
   ExtendedConfiguration,
@@ -34,7 +35,7 @@ _DEFAULT_EXTENDED_CONFIGURATION = ExtendedConfiguration(
 )
 
 
-class STARChatterboxBackend(STARBackend):
+class STARChatterboxBackend(ChatterboxTraceMixin, STARBackend):
   """Chatterbox backend for 'STAR'"""
 
   def __init__(
@@ -61,6 +62,7 @@ class STARChatterboxBackend(STARBackend):
         .iswap_installed` instead.
     """
     super().__init__()
+    self._init_trace()
     self._num_channels = num_channels
     self._iswap_parked = True
 
@@ -118,6 +120,7 @@ class STARChatterboxBackend(STARBackend):
       skip_core96_head: If True, skip initializing the CoRe 96 head module, if applicable.
     """
     await LiquidHandlerBackend.setup(self)
+    self._record_setup_event()
 
     self.id_ = 0
 
@@ -138,6 +141,7 @@ class STARChatterboxBackend(STARBackend):
       self._head96_information = None
 
   async def stop(self):
+    self._record_stop_event()
     await LiquidHandlerBackend.stop(self)
     self._setup_done = False
 
@@ -151,6 +155,7 @@ class STARChatterboxBackend(STARBackend):
     read_timeout: Optional[int] = None,
     wait: bool = True,
   ) -> Optional[str]:
+    self._record_event("firmware_command", command=cmd, id=id_, wait=wait)
     print(cmd)
     return None
 
@@ -161,6 +166,7 @@ class STARChatterboxBackend(STARBackend):
     read_timeout: Optional[int] = None,
     wait: bool = True,
   ) -> Optional[str]:
+    self._record_event("firmware_command", command=command, wait=wait)
     print(command)
     return None
 
@@ -172,6 +178,82 @@ class STARChatterboxBackend(STARBackend):
   async def request_extended_configuration(self) -> ExtendedConfiguration:
     assert self._extended_conf is not None
     return self._extended_conf
+
+  async def pick_up_tips(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="pick_up_tips",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().pick_up_tips(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def drop_tips(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="drop_tips",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().drop_tips(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def aspirate(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="aspirate",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().aspirate(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def dispense(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="dispense",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().dispense(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def pick_up_tips96(self, pickup, **backend_kwargs):
+    self._record_head96_operation(
+      action="pick_up_tips96",
+      op=pickup,
+      resource=pickup.resource,
+      extra={"tips": len([tip for tip in pickup.tips if tip is not None]), **backend_kwargs},
+    )
+    await super().pick_up_tips96(pickup=pickup, **backend_kwargs)
+
+  async def drop_tips96(self, drop, **backend_kwargs):
+    self._record_head96_operation(
+      action="drop_tips96",
+      op=drop,
+      resource=drop.resource,
+      extra=backend_kwargs,
+    )
+    await super().drop_tips96(drop=drop, **backend_kwargs)
+
+  async def aspirate96(self, aspiration, **backend_kwargs):
+    resource = aspiration.wells[0].parent if hasattr(aspiration, "wells") else aspiration.container
+    assert resource is not None
+    self._record_head96_operation(
+      action="aspirate96",
+      op=aspiration,
+      resource=resource,
+      extra={"volume": aspiration.volume, **backend_kwargs},
+    )
+    await super().aspirate96(aspiration=aspiration, **backend_kwargs)
+
+  async def dispense96(self, dispense, **backend_kwargs):
+    resource = dispense.wells[0].parent if hasattr(dispense, "wells") else dispense.container
+    assert resource is not None
+    self._record_head96_operation(
+      action="dispense96",
+      op=dispense,
+      resource=resource,
+      extra={"volume": dispense.volume, **backend_kwargs},
+    )
+    await super().dispense96(dispense=dispense, **backend_kwargs)
 
   # # # # # # # # 1_000 uL Channel: Basic Commands # # # # # # # #
 
@@ -219,15 +301,40 @@ class STARChatterboxBackend(STARBackend):
     return list(self._channels_minimum_y_spacing)
 
   async def move_channel_y(self, channel: int, y: float):
+    self._record_event(
+      "instruction",
+      instruction="move_y",
+      channel=channel,
+      target={"y": y},
+      simulated=False,
+    )
     print(f"moving channel {channel} to y: {y}")
 
   async def move_channel_x(self, channel: int, x: float):
+    self._record_event(
+      "instruction",
+      instruction="move_x",
+      channel=channel,
+      target={"x": x},
+      simulated=False,
+    )
     print(f"moving channel {channel} to x: {x}")
 
   async def move_all_channels_in_z_safety(self):
+    self._record_event(
+      "instruction",
+      instruction="move_all_channels_z_safety",
+      simulated=False,
+    )
     print("moving all channels to z safety")
 
   async def position_channels_in_z_direction(self, zs: Dict[int, float]):
+    self._record_event(
+      "instruction",
+      instruction="position_channels_z",
+      targets={channel: {"z": z_pos} for channel, z_pos in zs.items()},
+      simulated=False,
+    )
     print(f"positioning channels in z: {zs}")
 
   # # # # # # # # 1_000 uL Channel: Complex Commands # # # # # # # #
@@ -278,12 +385,30 @@ class STARChatterboxBackend(STARBackend):
     return self._iswap_parked is True
 
   async def move_iswap_x(self, x_position: float):
+    self._record_event(
+      "instruction",
+      instruction="move_iswap_x",
+      target={"x": x_position},
+      simulated=False,
+    )
     print("moving iswap x to", x_position)
 
   async def move_iswap_y(self, y_position: float):
+    self._record_event(
+      "instruction",
+      instruction="move_iswap_y",
+      target={"y": y_position},
+      simulated=False,
+    )
     print("moving iswap y to", y_position)
 
   async def move_iswap_z(self, z_position: float):
+    self._record_event(
+      "instruction",
+      instruction="move_iswap_z",
+      target={"z": z_position},
+      simulated=False,
+    )
     print("moving iswap z to", z_position)
 
   @asynccontextmanager
@@ -317,6 +442,13 @@ class STARChatterboxBackend(STARBackend):
     return tip.total_tip_length
 
   async def position_channels_in_y_direction(self, ys, make_space=True):
+    self._record_event(
+      "instruction",
+      instruction="position_channels_y",
+      targets={idx: {"y": y_pos} for idx, y_pos in enumerate(ys)},
+      make_space=make_space,
+      simulated=False,
+    )
     print("positioning channels in y:", ys, "make_space:", make_space)
 
   async def request_pip_height_last_lld(self):

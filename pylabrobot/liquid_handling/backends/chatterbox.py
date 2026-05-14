@@ -3,6 +3,7 @@ from typing import List, Optional, Union
 from pylabrobot.liquid_handling.backends.backend import (
   LiquidHandlerBackend,
 )
+from pylabrobot.liquid_handling.backends.chatterbox_trace import ChatterboxTraceMixin
 from pylabrobot.liquid_handling.standard import (
   Drop,
   DropTipRack,
@@ -21,7 +22,7 @@ from pylabrobot.liquid_handling.standard import (
 from pylabrobot.resources import Tip
 
 
-class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
+class LiquidHandlerChatterboxBackend(ChatterboxTraceMixin, LiquidHandlerBackend):
   """Chatter box backend for device-free testing. Prints out all operations."""
 
   _pip_length = 5
@@ -42,15 +43,18 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
   def __init__(self, num_channels: int = 8):
     """Initialize a chatter box backend."""
     super().__init__()
+    self._init_trace()
     self._num_channels = num_channels
     self._num_arms = 1
     self._head96_installed = True
 
   async def setup(self):
     await super().setup()
+    self._record_setup_event()
     print("Setting up the liquid handler.")
 
   async def stop(self):
+    self._record_stop_event()
     print("Stopping the liquid handler.")
 
   def serialize(self) -> dict:
@@ -61,6 +65,12 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
     return self._num_channels
 
   async def pick_up_tips(self, ops: List[Pickup], use_channels: List[int], **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="pick_up_tips",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
     print("Picking up tips:")
     header = (
       f"{'pip#':<{LiquidHandlerChatterboxBackend._pip_length}} "
@@ -91,6 +101,12 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
       print(row)
 
   async def drop_tips(self, ops: List[Drop], use_channels: List[int], **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="drop_tips",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
     print("Dropping tips:")
     header = (
       f"{'pip#':<{LiquidHandlerChatterboxBackend._pip_length}} "
@@ -126,6 +142,12 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
     use_channels: List[int],
     **backend_kwargs,
   ):
+    self._record_liquid_handler_operation(
+      action="aspirate",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
     print("Aspirating:")
     header = (
       f"{'pip#':<{LiquidHandlerChatterboxBackend._pip_length}} "
@@ -165,6 +187,12 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
     use_channels: List[int],
     **backend_kwargs,
   ):
+    self._record_liquid_handler_operation(
+      action="dispense",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
     print("Dispensing:")
     header = (
       f"{'pip#':<{LiquidHandlerChatterboxBackend._pip_length}} "
@@ -199,9 +227,21 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
       print(row)
 
   async def pick_up_tips96(self, pickup: PickupTipRack, **backend_kwargs):
+    self._record_head96_operation(
+      action="pick_up_tips96",
+      op=pickup,
+      resource=pickup.resource,
+      extra={"tips": len([tip for tip in pickup.tips if tip is not None]), **backend_kwargs},
+    )
     print(f"Picking up tips from {pickup.resource.name}.")
 
   async def drop_tips96(self, drop: DropTipRack, **backend_kwargs):
+    self._record_head96_operation(
+      action="drop_tips96",
+      op=drop,
+      resource=drop.resource,
+      extra=backend_kwargs,
+    )
     print(f"Dropping tips to {drop.resource.name}.")
 
   async def aspirate96(
@@ -211,6 +251,13 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
       resource = aspiration.wells[0].parent
     else:
       resource = aspiration.container
+    assert resource is not None
+    self._record_head96_operation(
+      action="aspirate96",
+      op=aspiration,
+      resource=resource,
+      extra={"volume": aspiration.volume},
+    )
     print(f"Aspirating {aspiration.volume} from {resource}.")
 
   async def dispense96(self, dispense: Union[MultiHeadDispensePlate, MultiHeadDispenseContainer]):
@@ -218,15 +265,51 @@ class LiquidHandlerChatterboxBackend(LiquidHandlerBackend):
       resource = dispense.wells[0].parent
     else:
       resource = dispense.container
+    assert resource is not None
+    self._record_head96_operation(
+      action="dispense96",
+      op=dispense,
+      resource=resource,
+      extra={"volume": dispense.volume},
+    )
     print(f"Dispensing {dispense.volume} to {resource}.")
 
   async def pick_up_resource(self, pickup: ResourcePickup):
+    self._record_event(
+      "operation",
+      action="pick_up_resource",
+      resource=self._resource_brief(pickup.resource),
+      offset=pickup.offset,
+      pickup_distance_from_top=pickup.pickup_distance_from_top,
+      direction=pickup.direction.name,
+    )
     print(f"Picking up resource: {pickup}")
 
   async def move_picked_up_resource(self, move: ResourceMove):
+    self._record_event(
+      "operation",
+      action="move_picked_up_resource",
+      resource=self._resource_brief(move.resource),
+      location=move.location,
+      gripped_direction=move.gripped_direction.name,
+      pickup_distance_from_top=move.pickup_distance_from_top,
+      offset=move.offset,
+    )
     print(f"Moving picked up resource: {move}")
 
   async def drop_resource(self, drop: ResourceDrop):
+    self._record_event(
+      "operation",
+      action="drop_resource",
+      resource=self._resource_brief(drop.resource),
+      destination=drop.destination,
+      destination_absolute_rotation=drop.destination_absolute_rotation,
+      offset=drop.offset,
+      pickup_distance_from_top=drop.pickup_distance_from_top,
+      pickup_direction=drop.pickup_direction.name,
+      direction=drop.direction.name,
+      rotation=drop.rotation,
+    )
     print(f"Dropping resource: {drop}")
 
   async def request_tip_presence(self) -> List[Optional[bool]]:
