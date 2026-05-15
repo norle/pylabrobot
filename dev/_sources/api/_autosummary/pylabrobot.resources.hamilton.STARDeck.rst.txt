@@ -1,4 +1,6 @@
-﻿pylabrobot.resources.hamilton.STARDeck
+﻿:orphan:
+
+pylabrobot.resources.hamilton.STARDeck
 ======================================
 
 .. currentmodule:: pylabrobot.resources.hamilton

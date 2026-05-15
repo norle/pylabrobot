@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.ItemizedResource.num\_items\_x
 ===================================================
 

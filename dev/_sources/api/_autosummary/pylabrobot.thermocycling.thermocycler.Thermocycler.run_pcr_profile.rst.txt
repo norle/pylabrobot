@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.thermocycling.thermocycler.Thermocycler.run\_pcr\_profile
 ====================================================================
 

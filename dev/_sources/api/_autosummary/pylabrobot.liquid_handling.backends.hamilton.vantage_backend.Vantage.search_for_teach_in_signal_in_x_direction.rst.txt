@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.vantage\_backend.Vantage.search\_for\_teach\_in\_signal\_in\_x\_direction
 =======================================================================================================================
 

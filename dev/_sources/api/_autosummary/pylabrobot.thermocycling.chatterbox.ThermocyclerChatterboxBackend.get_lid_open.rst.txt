@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.thermocycling.chatterbox.ThermocyclerChatterboxBackend.get\_lid\_open
 ================================================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.config.io.file.FileWriter.open\_mode
 ===============================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.scales.scale.Scale.get\_absolute\_size\_y
 ====================================================
 

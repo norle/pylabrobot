@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.tilting.tilter.Tilter.\_\_init\_\_
 =============================================
 

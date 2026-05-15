@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Tube.check\_can\_drop\_resource\_here
 ==========================================================
 

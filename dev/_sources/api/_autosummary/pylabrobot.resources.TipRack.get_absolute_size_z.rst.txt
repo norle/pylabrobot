@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TipRack.get\_absolute\_size\_z
 ===================================================
 

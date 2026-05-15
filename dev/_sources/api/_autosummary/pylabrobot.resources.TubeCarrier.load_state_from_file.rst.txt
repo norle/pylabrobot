@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TubeCarrier.load\_state\_from\_file
 ========================================================
 

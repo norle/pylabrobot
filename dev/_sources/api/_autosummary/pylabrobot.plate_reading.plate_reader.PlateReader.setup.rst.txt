@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.plate\_reading.plate\_reader.PlateReader.setup
 =========================================================
 

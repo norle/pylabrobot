@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.plate\_carriers.MP\_3Pos\_Fixed
 ==========================================================
 

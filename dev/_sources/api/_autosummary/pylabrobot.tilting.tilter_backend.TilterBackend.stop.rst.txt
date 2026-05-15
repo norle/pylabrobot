@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.tilting.tilter\_backend.TilterBackend.stop
 =====================================================
 

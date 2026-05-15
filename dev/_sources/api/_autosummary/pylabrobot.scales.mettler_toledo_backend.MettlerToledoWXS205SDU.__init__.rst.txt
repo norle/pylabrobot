@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.scales.mettler\_toledo\_backend.MettlerToledoWXS205SDU.\_\_init\_\_
 ==============================================================================
 

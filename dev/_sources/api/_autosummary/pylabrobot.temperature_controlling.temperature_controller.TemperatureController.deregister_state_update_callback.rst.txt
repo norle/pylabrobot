@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.temperature\_controlling.temperature\_controller.TemperatureController.deregister\_state\_update\_callback
 =====================================================================================================================
 

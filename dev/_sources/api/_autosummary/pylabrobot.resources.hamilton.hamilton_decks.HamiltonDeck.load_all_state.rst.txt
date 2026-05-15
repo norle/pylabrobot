@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.hamilton.hamilton\_decks.HamiltonDeck.load\_all\_state
 ===========================================================================
 

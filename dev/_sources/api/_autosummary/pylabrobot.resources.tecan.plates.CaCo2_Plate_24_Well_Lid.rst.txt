@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.plates.CaCo2\_Plate\_24\_Well\_Lid
 =============================================================
 

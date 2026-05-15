@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.only\_fans.chatterbox.FanChatterboxBackend.turn\_on
 ==============================================================
 

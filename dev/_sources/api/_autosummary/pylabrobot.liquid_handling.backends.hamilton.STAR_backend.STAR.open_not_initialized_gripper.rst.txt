@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.STAR\_backend.STAR.open\_not\_initialized\_gripper
 ================================================================================================
 

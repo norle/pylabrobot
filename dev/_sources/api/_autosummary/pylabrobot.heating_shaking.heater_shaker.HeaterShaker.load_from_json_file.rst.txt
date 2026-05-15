@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.heating\_shaking.heater\_shaker.HeaterShaker.load\_from\_json\_file
 ==============================================================================
 

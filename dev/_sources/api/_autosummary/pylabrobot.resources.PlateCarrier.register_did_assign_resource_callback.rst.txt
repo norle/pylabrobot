@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PlateCarrier.register\_did\_assign\_resource\_callback
 ===========================================================================
 

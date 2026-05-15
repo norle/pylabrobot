@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.STAR\_backend.STAR.take\_carrier\_out\_to\_autoload\_belt
 =======================================================================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PlateHolder.load\_all\_state
 =================================================
 

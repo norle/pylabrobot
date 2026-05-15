@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TipRack.assign\_child\_resource
 ====================================================
 

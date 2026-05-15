@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.vantage\_backend.Vantage.ipg\_expose\_channel\_n
 ==============================================================================================
 

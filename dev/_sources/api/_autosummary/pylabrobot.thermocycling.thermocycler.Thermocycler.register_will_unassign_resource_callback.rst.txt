@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.thermocycling.thermocycler.Thermocycler.register\_will\_unassign\_resource\_callback
 ===============================================================================================
 

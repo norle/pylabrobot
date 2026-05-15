@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.vantage\_backend.Vantage.x\_arm\_move\_to\_x\_position\_with\_all\_attached\_components\_in\_z\_safety\_position
 ==============================================================================================================================================================
 

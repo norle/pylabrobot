@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Lid.get\_location\_wrt
 ===========================================
 

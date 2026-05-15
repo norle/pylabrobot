@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TubeCarrier.assign\_child\_by\_anchor
 ==========================================================
 

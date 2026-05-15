@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Deck.load\_from\_json\_file
 ================================================
 

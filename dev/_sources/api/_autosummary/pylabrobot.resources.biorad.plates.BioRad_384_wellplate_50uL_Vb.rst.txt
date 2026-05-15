@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.biorad.plates.BioRad\_384\_wellplate\_50uL\_Vb
 ===================================================================
 

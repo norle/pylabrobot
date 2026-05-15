@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.hamilton.hamilton\_decks.HamiltonDeck.get\_absolute\_size\_z
 =================================================================================
 

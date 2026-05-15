@@ -1,0 +1,8 @@
+﻿:orphan:
+
+pylabrobot.resources.save\_geometry\_catalog
+============================================
+
+.. currentmodule:: pylabrobot.resources
+
+.. autofunction:: save_geometry_catalog

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TubeCarrier.assign\_resource\_to\_site
 ===========================================================
 

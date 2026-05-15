@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.centrifuge.vspin\_backend.VSpinBackend.configure\_and\_initialize
 ============================================================================
 

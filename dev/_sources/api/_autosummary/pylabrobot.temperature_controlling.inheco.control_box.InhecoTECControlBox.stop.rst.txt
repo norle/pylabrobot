@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.temperature\_controlling.inheco.control\_box.InhecoTECControlBox.stop
 ================================================================================
 

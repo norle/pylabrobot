@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TubeRack.assign\_child\_resource
 =====================================================
 

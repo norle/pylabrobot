@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.tilting.tilter.Tilter.unassign\_child\_resource
 ==========================================================
 

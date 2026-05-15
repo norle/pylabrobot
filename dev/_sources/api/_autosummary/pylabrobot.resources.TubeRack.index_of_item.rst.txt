@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TubeRack.index\_of\_item
 =============================================
 

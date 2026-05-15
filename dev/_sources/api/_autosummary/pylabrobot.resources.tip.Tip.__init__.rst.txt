@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tip.Tip.\_\_init\_\_
 =========================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tip\_tracker.TipTracker.register\_callback
 ===============================================================
 

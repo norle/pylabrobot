@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TipRack.save\_state\_to\_file
 ==================================================
 

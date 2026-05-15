@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.corning.costar.plates.Cor\_Cos\_12\_wellplate\_6900ul\_Fb
 ==============================================================================
 

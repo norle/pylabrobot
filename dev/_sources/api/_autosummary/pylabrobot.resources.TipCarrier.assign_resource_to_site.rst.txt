@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TipCarrier.assign\_resource\_to\_site
 ==========================================================
 

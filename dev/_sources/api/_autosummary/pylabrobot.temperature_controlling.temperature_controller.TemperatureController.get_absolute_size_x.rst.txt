@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.temperature\_controlling.temperature\_controller.TemperatureController.get\_absolute\_size\_x
 ========================================================================================================
 

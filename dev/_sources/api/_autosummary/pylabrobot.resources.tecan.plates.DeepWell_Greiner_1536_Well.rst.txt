@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.plates.DeepWell\_Greiner\_1536\_Well
 ===============================================================
 

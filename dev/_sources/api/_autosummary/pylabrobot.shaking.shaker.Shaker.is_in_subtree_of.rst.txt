@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.shaking.shaker.Shaker.is\_in\_subtree\_of
 ====================================================
 

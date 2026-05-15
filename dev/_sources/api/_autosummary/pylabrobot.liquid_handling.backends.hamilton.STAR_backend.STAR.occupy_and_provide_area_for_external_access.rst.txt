@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.STAR\_backend.STAR.occupy\_and\_provide\_area\_for\_external\_access
 ==================================================================================================================
 

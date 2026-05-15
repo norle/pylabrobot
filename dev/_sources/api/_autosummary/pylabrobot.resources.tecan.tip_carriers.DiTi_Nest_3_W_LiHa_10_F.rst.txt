@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_carriers.DiTi\_Nest\_3\_W\_LiHa\_10\_F
 ======================================================================
 

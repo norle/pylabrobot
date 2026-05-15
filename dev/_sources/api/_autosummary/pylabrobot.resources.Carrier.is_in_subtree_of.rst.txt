@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Carrier.is\_in\_subtree\_of
 ================================================
 

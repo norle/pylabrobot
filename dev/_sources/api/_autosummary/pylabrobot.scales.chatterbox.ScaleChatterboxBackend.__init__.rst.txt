@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.scales.chatterbox.ScaleChatterboxBackend.\_\_init\_\_
 ================================================================
 

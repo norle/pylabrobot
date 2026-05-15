@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Well.unassign\_child\_resource
 ===================================================
 

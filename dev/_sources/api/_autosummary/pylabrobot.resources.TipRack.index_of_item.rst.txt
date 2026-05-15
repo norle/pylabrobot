@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TipRack.index\_of\_item
 ============================================
 

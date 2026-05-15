@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_racks.DiTi\_500ul\_SBS\_MCA96
 =============================================================
 

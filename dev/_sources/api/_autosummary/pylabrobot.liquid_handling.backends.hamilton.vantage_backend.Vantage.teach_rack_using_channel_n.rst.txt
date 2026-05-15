@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.vantage\_backend.Vantage.teach\_rack\_using\_channel\_n
 =====================================================================================================
 

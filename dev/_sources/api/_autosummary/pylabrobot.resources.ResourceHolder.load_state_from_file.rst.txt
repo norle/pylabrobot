@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.ResourceHolder.load\_state\_from\_file
 ===========================================================
 

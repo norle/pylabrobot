@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Tube.get\_all\_children
 ============================================
 

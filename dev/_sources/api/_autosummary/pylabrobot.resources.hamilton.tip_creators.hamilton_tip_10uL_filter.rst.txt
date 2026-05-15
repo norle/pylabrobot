@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.hamilton.tip\_creators.hamilton\_tip\_10uL\_filter
 =======================================================================
 

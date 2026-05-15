@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.corning.axygen.plates.Cor\_Axy\_24\_wellplate\_10mL\_Vb\_Lid
 =================================================================================
 

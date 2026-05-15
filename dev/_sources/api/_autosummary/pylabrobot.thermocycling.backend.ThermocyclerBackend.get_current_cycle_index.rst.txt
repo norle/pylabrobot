@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.thermocycling.backend.ThermocyclerBackend.get\_current\_cycle\_index
 ===============================================================================
 

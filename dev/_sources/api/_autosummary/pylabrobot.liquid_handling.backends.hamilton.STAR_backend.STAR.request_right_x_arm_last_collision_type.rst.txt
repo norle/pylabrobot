@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.STAR\_backend.STAR.request\_right\_x\_arm\_last\_collision\_type
 ==============================================================================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Trough.check\_can\_drop\_resource\_here
 ============================================================
 

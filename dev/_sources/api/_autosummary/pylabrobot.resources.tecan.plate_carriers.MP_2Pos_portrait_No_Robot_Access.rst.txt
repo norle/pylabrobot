@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.plate\_carriers.MP\_2Pos\_portrait\_No\_Robot\_Access
 ================================================================================
 

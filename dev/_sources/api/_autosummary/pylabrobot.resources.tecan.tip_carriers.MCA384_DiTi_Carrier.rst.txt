@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_carriers.MCA384\_DiTi\_Carrier
 ==============================================================
 

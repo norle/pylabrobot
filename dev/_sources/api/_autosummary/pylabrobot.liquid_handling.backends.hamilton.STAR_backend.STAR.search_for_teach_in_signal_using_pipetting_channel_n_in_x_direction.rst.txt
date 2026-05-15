@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.STAR\_backend.STAR.search\_for\_teach\_in\_signal\_using\_pipetting\_channel\_n\_in\_x\_direction
 ===============================================================================================================================================
 

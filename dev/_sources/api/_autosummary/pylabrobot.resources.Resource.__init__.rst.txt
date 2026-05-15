@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Resource.\_\_init\_\_
 ==========================================
 

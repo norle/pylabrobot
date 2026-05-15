@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_carriers.Washstation\_2Grid\_Trough\_DiTi
 =========================================================================
 

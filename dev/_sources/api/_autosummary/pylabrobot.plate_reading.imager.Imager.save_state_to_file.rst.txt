@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.plate\_reading.imager.Imager.save\_state\_to\_file
 =============================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.thermocycling.opentrons.OpentronsThermocyclerModuleV1.deactivate\_block
 ==================================================================================
 

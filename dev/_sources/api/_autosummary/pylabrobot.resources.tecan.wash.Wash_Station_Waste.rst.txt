@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.wash.Wash\_Station\_Waste
 ====================================================
 

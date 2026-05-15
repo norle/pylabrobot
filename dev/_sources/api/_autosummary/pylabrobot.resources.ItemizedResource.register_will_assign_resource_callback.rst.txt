@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.ItemizedResource.register\_will\_assign\_resource\_callback
 ================================================================================
 

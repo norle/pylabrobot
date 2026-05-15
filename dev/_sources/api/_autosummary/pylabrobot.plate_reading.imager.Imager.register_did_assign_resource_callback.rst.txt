@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.plate\_reading.imager.Imager.register\_did\_assign\_resource\_callback
 =================================================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.opentrons.tip\_racks.opentrons\_96\_tiprack\_10ul
 ======================================================================
 

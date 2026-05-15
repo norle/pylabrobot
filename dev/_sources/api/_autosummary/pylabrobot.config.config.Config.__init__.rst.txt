@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.config.config.Config.\_\_init\_\_
 ============================================
 

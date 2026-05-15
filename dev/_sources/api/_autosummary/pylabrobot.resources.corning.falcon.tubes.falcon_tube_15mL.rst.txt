@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.corning.falcon.tubes.falcon\_tube\_15mL
 ============================================================
 

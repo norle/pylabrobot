@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.thermocycling.thermocycler.Thermocycler.assign\_child\_resource
 ==========================================================================
 

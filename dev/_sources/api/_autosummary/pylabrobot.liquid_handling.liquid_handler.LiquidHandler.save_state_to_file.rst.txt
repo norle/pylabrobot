@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.liquid\_handler.LiquidHandler.save\_state\_to\_file
 ===============================================================================
 

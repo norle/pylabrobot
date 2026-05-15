@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Deck.deregister\_state\_update\_callback
 =============================================================
 

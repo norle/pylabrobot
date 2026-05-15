@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.hamilton.plate\_carriers.PLT\_CAR\_L4ST\_LOW\_A00\_4x9\_Nunc96
 ===================================================================================
 

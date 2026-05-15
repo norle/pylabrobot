@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PetriDish.get\_absolute\_rotation
 ======================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PetriDish.deregister\_state\_update\_callback
 ==================================================================
 

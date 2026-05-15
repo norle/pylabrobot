@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.utils.interpolation.interpolate\_1d
 ==============================================
 

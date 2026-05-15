@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Trough.register\_will\_unassign\_resource\_callback
 ========================================================================
 

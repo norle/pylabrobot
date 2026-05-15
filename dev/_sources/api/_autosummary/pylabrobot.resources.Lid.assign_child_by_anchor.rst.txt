@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Lid.assign\_child\_by\_anchor
 ==================================================
 

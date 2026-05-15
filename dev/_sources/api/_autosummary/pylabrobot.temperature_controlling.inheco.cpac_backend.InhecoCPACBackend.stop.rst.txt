@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.temperature\_controlling.inheco.cpac\_backend.InhecoCPACBackend.stop
 ===============================================================================
 

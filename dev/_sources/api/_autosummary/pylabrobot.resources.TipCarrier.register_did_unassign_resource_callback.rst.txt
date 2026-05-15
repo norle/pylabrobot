@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.TipCarrier.register\_did\_unassign\_resource\_callback
 ===========================================================================
 

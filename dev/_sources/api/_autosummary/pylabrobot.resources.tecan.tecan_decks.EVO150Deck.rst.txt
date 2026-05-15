@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tecan\_decks.EVO150Deck
 ==================================================
 

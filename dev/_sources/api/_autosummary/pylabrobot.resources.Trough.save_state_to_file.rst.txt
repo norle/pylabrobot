@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Trough.save\_state\_to\_file
 =================================================
 

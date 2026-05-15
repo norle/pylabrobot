@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PetriDish.get\_location\_wrt
 =================================================
 

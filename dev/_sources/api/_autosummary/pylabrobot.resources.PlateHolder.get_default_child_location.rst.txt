@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PlateHolder.get\_default\_child\_location
 ==============================================================
 

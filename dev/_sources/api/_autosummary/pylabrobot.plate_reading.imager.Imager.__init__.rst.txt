@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.plate\_reading.imager.Imager.\_\_init\_\_
 ====================================================
 

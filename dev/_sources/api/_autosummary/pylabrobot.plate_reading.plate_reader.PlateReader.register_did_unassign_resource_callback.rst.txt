@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.plate\_reading.plate\_reader.PlateReader.register\_did\_unassign\_resource\_callback
 ===============================================================================================
 

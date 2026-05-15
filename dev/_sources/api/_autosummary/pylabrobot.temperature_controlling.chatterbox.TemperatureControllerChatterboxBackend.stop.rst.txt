@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.temperature\_controlling.chatterbox.TemperatureControllerChatterboxBackend.stop
 ==========================================================================================
 

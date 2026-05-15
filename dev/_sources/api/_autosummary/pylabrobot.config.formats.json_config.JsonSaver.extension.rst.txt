@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.config.formats.json\_config.JsonSaver.extension
 ==========================================================
 

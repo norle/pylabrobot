@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Deck.save\_state\_to\_file
 ===============================================
 

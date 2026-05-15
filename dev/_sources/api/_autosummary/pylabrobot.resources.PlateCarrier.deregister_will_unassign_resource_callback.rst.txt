@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PlateCarrier.deregister\_will\_unassign\_resource\_callback
 ================================================================================
 

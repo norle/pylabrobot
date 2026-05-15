@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.vantage\_backend.Vantage.x\_arm\_request\_arm\_x\_position
 ========================================================================================================
 

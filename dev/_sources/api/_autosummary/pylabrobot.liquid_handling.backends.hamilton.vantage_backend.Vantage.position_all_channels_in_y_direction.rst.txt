@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.vantage\_backend.Vantage.position\_all\_channels\_in\_y\_direction
 ================================================================================================================
 

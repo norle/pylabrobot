@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.shaking.shaker.Shaker.get\_absolute\_location
 ========================================================
 

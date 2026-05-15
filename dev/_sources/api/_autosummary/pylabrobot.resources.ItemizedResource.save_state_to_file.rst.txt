@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.ItemizedResource.save\_state\_to\_file
 ===========================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_creators.DiTi\_50ul\_MCA384\_tip
 ================================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Lid.is\_in\_subtree\_of
 ============================================
 

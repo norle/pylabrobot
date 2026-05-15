@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.scales.chatterbox.ScaleChatterboxBackend.setup
 =========================================================
 

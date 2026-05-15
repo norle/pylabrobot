@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.heating\_shaking.heater\_shaker.HeaterShaker.deregister\_will\_unassign\_resource\_callback
 ======================================================================================================
 

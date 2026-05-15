@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Tube.deregister\_will\_unassign\_resource\_callback
 ========================================================================
 

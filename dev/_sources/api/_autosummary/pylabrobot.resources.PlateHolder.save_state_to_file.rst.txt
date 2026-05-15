@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PlateHolder.save\_state\_to\_file
 ======================================================
 

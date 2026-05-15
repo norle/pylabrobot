@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Resource.get\_all\_children
 ================================================
 

@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_carriers.DiTi\_Nest\_2\_W\_MCA384\_200
 ======================================================================
 

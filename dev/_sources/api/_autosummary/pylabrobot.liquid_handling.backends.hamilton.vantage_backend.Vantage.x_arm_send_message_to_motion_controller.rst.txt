@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.liquid\_handling.backends.hamilton.vantage\_backend.Vantage.x\_arm\_send\_message\_to\_motion\_controller
 ====================================================================================================================
 

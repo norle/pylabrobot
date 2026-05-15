@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Rotation.\_\_init\_\_
 ==========================================
 

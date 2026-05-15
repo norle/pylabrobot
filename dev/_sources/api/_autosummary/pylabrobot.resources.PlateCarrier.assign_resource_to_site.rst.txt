@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.PlateCarrier.assign\_resource\_to\_site
 ============================================================
 

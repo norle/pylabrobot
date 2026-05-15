@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.only\_fans.fan.Fan.\_\_init\_\_
 ==========================================
 

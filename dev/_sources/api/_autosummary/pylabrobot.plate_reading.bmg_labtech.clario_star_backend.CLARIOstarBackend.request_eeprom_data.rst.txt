@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.plate\_reading.bmg\_labtech.clario\_star\_backend.CLARIOstarBackend.request\_eeprom\_data
 ====================================================================================================
 

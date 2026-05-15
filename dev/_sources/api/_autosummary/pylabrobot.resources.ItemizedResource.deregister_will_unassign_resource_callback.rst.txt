@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.ItemizedResource.deregister\_will\_unassign\_resource\_callback
 ====================================================================================
 

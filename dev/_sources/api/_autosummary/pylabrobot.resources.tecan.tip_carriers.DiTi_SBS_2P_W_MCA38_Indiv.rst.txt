@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_carriers.DiTi\_SBS\_2P\_W\_MCA38\_Indiv
 =======================================================================
 

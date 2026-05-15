@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.hamilton.tip\_creators.slim\_standard\_volume\_tip\_with\_filter
 =====================================================================================
 

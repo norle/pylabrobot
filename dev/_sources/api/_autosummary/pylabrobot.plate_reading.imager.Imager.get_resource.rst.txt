@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.plate\_reading.imager.Imager.get\_resource
 =====================================================
 

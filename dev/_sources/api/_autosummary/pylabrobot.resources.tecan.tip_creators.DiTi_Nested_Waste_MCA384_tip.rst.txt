@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.tecan.tip\_creators.DiTi\_Nested\_Waste\_MCA384\_tip
 =========================================================================
 

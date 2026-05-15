@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.scales.scale.Scale.serialize\_state
 ==============================================
 

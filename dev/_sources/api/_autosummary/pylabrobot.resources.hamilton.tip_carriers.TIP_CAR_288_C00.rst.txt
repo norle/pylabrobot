@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.hamilton.tip\_carriers.TIP\_CAR\_288\_C00
 ==============================================================
 

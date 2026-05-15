@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Container.assign\_child\_resource
 ======================================================
 

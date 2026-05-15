@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.Container.deregister\_will\_unassign\_resource\_callback
 =============================================================================
 

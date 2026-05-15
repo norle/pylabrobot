@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.centrifuge.centrifuge.Centrifuge.get\_absolute\_size\_z
 ==================================================================
 

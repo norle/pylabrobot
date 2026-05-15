@@ -1,3 +1,5 @@
+:orphan:
+
 pylabrobot.resources.opentrons.load.load\_ot\_tube\_rack
 ========================================================
 
