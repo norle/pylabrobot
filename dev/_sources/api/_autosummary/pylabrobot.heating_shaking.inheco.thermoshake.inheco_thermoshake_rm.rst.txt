@@ -1,6 +1,4 @@
-﻿:orphan:
-
-pylabrobot.heating\_shaking.inheco.thermoshake.inheco\_thermoshake\_rm
+﻿pylabrobot.heating\_shaking.inheco.thermoshake.inheco\_thermoshake\_rm
 ======================================================================
 
 .. currentmodule:: pylabrobot.heating_shaking.inheco.thermoshake

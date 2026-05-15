@@ -1,6 +1,4 @@
-﻿:orphan:
-
-pylabrobot.liquid\_handling.strictness.set\_strictness
+﻿pylabrobot.liquid\_handling.strictness.set\_strictness
 ======================================================
 
 .. currentmodule:: pylabrobot.liquid_handling.strictness

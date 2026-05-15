@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.tilting.hamilton\_backend.HamiltonTiltModuleBackend.tilt\_request\_offset\_between\_light\_barrier\_and\_init\_position
 ==================================================================================================================================
 

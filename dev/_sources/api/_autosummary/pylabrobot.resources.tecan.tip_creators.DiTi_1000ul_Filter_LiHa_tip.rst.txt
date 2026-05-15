@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.resources.tecan.tip\_creators.DiTi\_1000ul\_Filter\_LiHa\_tip
 ========================================================================
 

@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.resources.tecan.tip\_carriers.LI\_\_\_DiTi\_3Pos
 ===========================================================
 

@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.plate\_reading.plate\_reader.PlateReader.unassign\_child\_resource
 =============================================================================
 

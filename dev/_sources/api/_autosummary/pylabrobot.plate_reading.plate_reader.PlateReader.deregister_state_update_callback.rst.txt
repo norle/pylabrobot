@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.plate\_reading.plate\_reader.PlateReader.deregister\_state\_update\_callback
 =======================================================================================
 

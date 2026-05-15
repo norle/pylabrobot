@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.centrifuge.centrifuge.Centrifuge.setup\_finished
 ===========================================================
 

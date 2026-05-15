@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.resources.ResourceStack.register\_will\_assign\_resource\_callback
 =============================================================================
 

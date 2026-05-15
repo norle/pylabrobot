@@ -1,6 +1,4 @@
-﻿:orphan:
-
-pylabrobot.resources.no\_tip\_tracking
+﻿pylabrobot.resources.no\_tip\_tracking
 ======================================
 
 .. currentmodule:: pylabrobot.resources

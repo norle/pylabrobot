@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.liquid\_handling.backends.hamilton.STAR\_backend.STAR.request\_present\_wrap\_size\_of\_installed\_arms
 ==================================================================================================================
 

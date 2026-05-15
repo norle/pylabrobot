@@ -1,5 +1,3 @@
-:orphan:
-
 pylabrobot.liquid\_handling.backends.hamilton.STAR\_backend.STAR.move\_left\_x\_arm\_to\_position\_with\_all\_attached\_components\_in\_z\_safety\_position
 ===========================================================================================================================================================
 
