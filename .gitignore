@@ -10,6 +10,8 @@ pyhamilton/LAY-BACKUP
 *.log
 build/lib
 
+test_logs/
+
 myenv
 env/*
 .venv
