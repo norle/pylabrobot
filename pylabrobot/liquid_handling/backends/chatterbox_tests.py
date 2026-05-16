@@ -140,3 +140,25 @@ class ChatterboxBackendTests(unittest.IsolatedAsyncioTestCase):
 
     export = self.backend.export_for_simulation(compact=True)
     self.assertIn("liquid_tracking", export)
+    self.assertFalse(self._contains_key(export["events"], "liquid_transfer"))
+
+    transfer_export = self.backend.export_for_simulation(
+      compact=True,
+      liquid_tracking="transfers",
+    )
+    self.assertNotIn("liquid_tracking", transfer_export)
+    self.assertTrue(self._contains_key(transfer_export["events"], "liquid_transfer"))
+
+    omitted_export = self.backend.export_for_simulation(
+      compact=True,
+      liquid_tracking="none",
+    )
+    self.assertNotIn("liquid_tracking", omitted_export)
+    self.assertFalse(self._contains_key(omitted_export["events"], "liquid_transfer"))
+
+  def _contains_key(self, value, key: str) -> bool:
+    if isinstance(value, dict):
+      return key in value or any(self._contains_key(item, key) for item in value.values())
+    if isinstance(value, list):
+      return any(self._contains_key(item, key) for item in value)
+    return False

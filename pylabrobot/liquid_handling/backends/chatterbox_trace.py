@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
 from pylabrobot.liquid_handling.standard import (
   Drop,
@@ -27,6 +27,7 @@ Head96Op = Union[
   MultiHeadDispensePlate,
   MultiHeadDispenseContainer,
 ]
+LiquidTrackingExportMode = Literal["none", "state", "transfers", "all"]
 
 
 class ChatterboxTraceMixin:
@@ -95,15 +96,23 @@ class ChatterboxTraceMixin:
     include_deck_layout: bool = True,
     compact: bool = False,
     include_firmware_commands: bool = False,
+    liquid_tracking: LiquidTrackingExportMode = "state",
   ) -> Dict[str, Any]:
+    if liquid_tracking not in {"none", "state", "transfers", "all"}:
+      raise ValueError(
+        "liquid_tracking must be one of: 'none', 'state', 'transfers', or 'all'."
+      )
+
     events = self.get_trace()
+    if not self._liquid_tracking_enabled or liquid_tracking in {"none", "state"}:
+      events = self._without_liquid_transfer_payloads(events)
     if compact:
       events = self._compact_events(events, include_firmware_commands=include_firmware_commands)
     elif not include_firmware_commands:
       events = [event for event in events if event.get("event") != "firmware_command"]
 
     data: Dict[str, Any] = {"events": events}
-    if self._liquid_tracking_enabled:
+    if self._liquid_tracking_enabled and liquid_tracking in {"state", "all"}:
       data["liquid_tracking"] = self.get_liquid_tracking_state()
     if include_deck_layout:
       if compact:
@@ -120,11 +129,13 @@ class ChatterboxTraceMixin:
     include_deck_layout: bool = True,
     compact: bool = False,
     include_firmware_commands: bool = False,
+    liquid_tracking: LiquidTrackingExportMode = "state",
   ) -> Dict[str, Any]:
     return self.export_simulation_trace(
       include_deck_layout=include_deck_layout,
       compact=compact,
       include_firmware_commands=include_firmware_commands,
+      liquid_tracking=liquid_tracking,
     )
 
   def get_deck_layout(self, include_children: bool = True) -> Dict[str, Any]:
@@ -136,6 +147,23 @@ class ChatterboxTraceMixin:
 
   def _record_event(self, event: str, **data: Any) -> None:
     self._command_log.append({"event": event, **self._json_safe(data)})
+
+  def _without_liquid_transfer_payloads(
+    self,
+    events: List[Dict[str, Any]],
+  ) -> List[Dict[str, Any]]:
+    return [self._drop_liquid_transfer_payload(event) for event in events]
+
+  def _drop_liquid_transfer_payload(self, value: Any) -> Any:
+    if isinstance(value, dict):
+      return {
+        key: self._drop_liquid_transfer_payload(val)
+        for key, val in value.items()
+        if key != "liquid_transfer"
+      }
+    if isinstance(value, list):
+      return [self._drop_liquid_transfer_payload(item) for item in value]
+    return value
 
   def _record_setup_event(self) -> None:
     self._record_event("lifecycle", action="setup")
