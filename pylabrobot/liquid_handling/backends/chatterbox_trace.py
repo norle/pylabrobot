@@ -34,6 +34,9 @@ class ChatterboxTraceMixin:
 
   def _init_trace(self) -> None:
     self._command_log: List[Dict[str, Any]] = []
+    self._liquid_tracking_enabled = False
+    self._liquid_tracking_resources: Dict[str, Dict[str, float]] = {}
+    self._liquid_tracking_tips: Dict[str, Dict[str, float]] = {}
 
   def clear_trace(self) -> None:
     self._command_log.clear()
@@ -46,6 +49,46 @@ class ChatterboxTraceMixin:
 
   def get_command_log(self) -> List[Dict[str, Any]]:
     return self.get_trace()
+
+  def enable_liquid_tracking(self, enabled: bool = True) -> None:
+    """Enable or disable optional liquid composition tracking for chatterbox simulation."""
+    self._liquid_tracking_enabled = enabled
+
+  def clear_liquid_tracking_state(self) -> None:
+    """Clear tracked liquid compositions for resources and tips."""
+    self._liquid_tracking_resources.clear()
+    self._liquid_tracking_tips.clear()
+
+  def set_liquid_tracking_state(
+    self,
+    resource: Union[Resource, Sequence[Resource], str],
+    components: Dict[str, float],
+    total_volume: Optional[float] = None,
+  ) -> None:
+    """Seed a resource with known liquid components (uL by species)."""
+    if isinstance(resource, str):
+      resource_name = resource
+    elif isinstance(resource, Resource):
+      resource_name = resource.name
+    elif len(resource) == 1 and isinstance(resource[0], Resource):
+      resource_name = resource[0].name
+    else:
+      raise TypeError("resource must be a Resource, resource name, or single-item sequence.")
+    normalized = self._normalize_components(components=components, total_volume=total_volume)
+    self._liquid_tracking_resources[resource_name] = normalized
+
+  def get_liquid_tracking_state(self) -> Dict[str, Any]:
+    """Get current liquid tracking snapshot with concentrations."""
+    return {
+      "resources": {
+        name: self._liquid_state_payload(components)
+        for name, components in sorted(self._liquid_tracking_resources.items())
+      },
+      "tips": {
+        name: self._liquid_state_payload(components)
+        for name, components in sorted(self._liquid_tracking_tips.items())
+      },
+    }
 
   def export_simulation_trace(
     self,
@@ -60,6 +103,8 @@ class ChatterboxTraceMixin:
       events = [event for event in events if event.get("event") != "firmware_command"]
 
     data: Dict[str, Any] = {"events": events}
+    if self._liquid_tracking_enabled:
+      data["liquid_tracking"] = self.get_liquid_tracking_state()
     if include_deck_layout:
       if compact:
         data["deck"] = {
@@ -108,6 +153,13 @@ class ChatterboxTraceMixin:
     channels = [
       self._op_to_channel_payload(op=op, channel=channel) for op, channel in zip(ops, use_channels)
     ]
+    if self._liquid_tracking_enabled:
+      self._apply_liquid_tracking_to_channels(
+        action=action,
+        ops=ops,
+        use_channels=use_channels,
+        channels=channels,
+      )
     self._record_event(
       "operation",
       action=action,
@@ -123,6 +175,12 @@ class ChatterboxTraceMixin:
     resource: Resource,
     extra: Optional[Dict[str, Any]] = None,
   ) -> None:
+    extra_payload = dict(extra or {})
+    if self._liquid_tracking_enabled:
+      liquid_event = self._apply_head96_liquid_tracking(action=action, op=op, resource=resource)
+      if liquid_event is not None:
+        extra_payload["liquid_transfer"] = liquid_event
+
     target = self._resource_target(resource=resource, offset=op.offset)
     self._record_event(
       "operation",
@@ -131,7 +189,7 @@ class ChatterboxTraceMixin:
       resource=self._resource_brief(resource),
       offset=self._coordinate_to_dict(op.offset),
       target=self._coordinate_to_dict(target),
-      extra=extra or {},
+      extra=extra_payload,
     )
 
     safe_z = self._safe_travel_z()
@@ -164,7 +222,7 @@ class ChatterboxTraceMixin:
       head="head96",
       simulated=True,
       target=self._coordinate_to_dict(target),
-      extra=extra or {},
+      extra=extra_payload,
     )
     self._record_event(
       "instruction",
@@ -215,6 +273,8 @@ class ChatterboxTraceMixin:
       }
       if "volume" in channel_payload:
         execute_payload["volume"] = channel_payload["volume"]
+      if "liquid_transfer" in channel_payload:
+        execute_payload["liquid_transfer"] = channel_payload["liquid_transfer"]
       self._record_event("instruction", **execute_payload)
       self._record_event(
         "instruction",
@@ -267,6 +327,199 @@ class ChatterboxTraceMixin:
     top_zs = [resource.get_absolute_location(z="top").z for resource in self.deck.get_all_resources()]
     top_zs.append(0.0)
     return round(max(top_zs) + clearance, 4)
+
+  def _apply_liquid_tracking_to_channels(
+    self,
+    action: str,
+    ops: Sequence[PipettingOp],
+    use_channels: Sequence[int],
+    channels: Sequence[Dict[str, Any]],
+  ) -> None:
+    if action in {"pick_up_tips", "drop_tips"}:
+      for channel in use_channels:
+        self._liquid_tracking_tips.pop(self._tip_state_key(channel), None)
+      return
+
+    if action not in {"aspirate", "dispense"}:
+      return
+
+    for op, channel, channel_payload in zip(ops, use_channels, channels):
+      if not isinstance(op, (SingleChannelAspiration, SingleChannelDispense)):
+        continue
+      volume = max(0.0, float(op.volume))
+      if volume <= 0:
+        continue
+
+      tip_key = self._tip_state_key(channel)
+      tip_state = self._liquid_tracking_tips.setdefault(tip_key, {})
+
+      if action == "aspirate":
+        source_state = self._resource_liquid_state(resource=op.resource)
+        transfer = self._withdraw_components(
+          state=source_state,
+          volume=volume,
+          fallback_species=op.resource.name,
+        )
+        self._add_components(tip_state, transfer)
+      else:
+        transfer = self._withdraw_components(
+          state=tip_state,
+          volume=volume,
+          fallback_species=f"{tip_key}:unknown",
+        )
+        destination_state = self._resource_liquid_state(resource=op.resource)
+        self._add_components(destination_state, transfer)
+
+      channel_payload["liquid_transfer"] = self._liquid_state_payload(transfer)
+
+  def _apply_head96_liquid_tracking(
+    self,
+    action: str,
+    op: Head96Op,
+    resource: Resource,
+  ) -> Optional[Dict[str, Any]]:
+    tip_key = "head96"
+    if action in {"pick_up_tips96", "drop_tips96"}:
+      self._liquid_tracking_tips.pop(tip_key, None)
+      return None
+
+    if action not in {"aspirate96", "dispense96"}:
+      return None
+
+    if not hasattr(op, "volume") or not hasattr(op, "tips"):
+      return None
+
+    tip_count = len([tip for tip in op.tips if tip is not None])  # type: ignore[attr-defined]
+    if tip_count <= 0:
+      return None
+    volume = max(0.0, float(op.volume)) * tip_count  # type: ignore[attr-defined]
+    if volume <= 0:
+      return None
+
+    tip_state = self._liquid_tracking_tips.setdefault(tip_key, {})
+    if action == "aspirate96":
+      source_state = self._resource_liquid_state(resource=resource)
+      transfer = self._withdraw_components(
+        state=source_state,
+        volume=volume,
+        fallback_species=resource.name,
+      )
+      self._add_components(tip_state, transfer)
+    else:
+      transfer = self._withdraw_components(
+        state=tip_state,
+        volume=volume,
+        fallback_species=f"{tip_key}:unknown",
+      )
+      destination_state = self._resource_liquid_state(resource=resource)
+      self._add_components(destination_state, transfer)
+
+    return self._liquid_state_payload(transfer)
+
+  def _resource_liquid_state(self, resource: Resource) -> Dict[str, float]:
+    state = self._liquid_tracking_resources.setdefault(resource.name, {})
+    if state:
+      return state
+
+    tracker = getattr(resource, "tracker", None)
+    if tracker is None:
+      return state
+
+    try:
+      known_volume = max(0.0, float(tracker.get_used_volume()))
+    except Exception:
+      return state
+
+    if known_volume > 0:
+      state[resource.name] = known_volume
+    return state
+
+  def _tip_state_key(self, channel: int) -> str:
+    return f"channel:{channel}"
+
+  def _withdraw_components(
+    self,
+    state: Dict[str, float],
+    volume: float,
+    fallback_species: str,
+  ) -> Dict[str, float]:
+    if volume <= 0:
+      return {}
+
+    total_volume = sum(max(0.0, amount) for amount in state.values())
+    if total_volume <= 0:
+      return {fallback_species: volume}
+
+    ratio = min(1.0, volume / total_volume)
+    transfer: Dict[str, float] = {}
+    for species, amount in list(state.items()):
+      safe_amount = max(0.0, amount)
+      if safe_amount <= 0:
+        continue
+      moved = safe_amount * ratio
+      if moved > 0:
+        transfer[species] = moved
+      remaining = safe_amount - moved
+      if remaining > 1e-12:
+        state[species] = remaining
+      else:
+        state.pop(species, None)
+
+    missing = max(0.0, volume - sum(transfer.values()))
+    if missing > 1e-12:
+      transfer[fallback_species] = transfer.get(fallback_species, 0.0) + missing
+
+    return transfer
+
+  def _add_components(self, state: Dict[str, float], components: Dict[str, float]) -> None:
+    for species, amount in components.items():
+      safe_amount = max(0.0, float(amount))
+      if safe_amount <= 0:
+        continue
+      state[species] = state.get(species, 0.0) + safe_amount
+
+  def _normalize_components(
+    self,
+    components: Dict[str, float],
+    total_volume: Optional[float],
+  ) -> Dict[str, float]:
+    clean = {
+      species: max(0.0, float(amount))
+      for species, amount in components.items()
+      if max(0.0, float(amount)) > 0
+    }
+    if total_volume is None:
+      return clean
+
+    target_total = max(0.0, float(total_volume))
+    current_total = sum(clean.values())
+    if current_total <= 0 or target_total <= 0:
+      return {}
+    scale = target_total / current_total
+    return {species: amount * scale for species, amount in clean.items()}
+
+  def _liquid_state_payload(self, components: Dict[str, float]) -> Dict[str, Any]:
+    total_volume = sum(max(0.0, amount) for amount in components.values())
+    if total_volume <= 0:
+      return {
+        "total_volume": 0.0,
+        "components": {},
+        "concentrations": {},
+      }
+    sorted_components = {
+      species: amount
+      for species, amount in sorted(
+        ((species, amount) for species, amount in components.items() if amount > 1e-12),
+        key=lambda item: item[0],
+      )
+    }
+    return {
+      "total_volume": total_volume,
+      "components": sorted_components,
+      "concentrations": {
+        species: amount / total_volume for species, amount in sorted_components.items()
+      },
+    }
 
   def _resource_to_dict(self, resource: Resource, include_children: bool = True) -> Dict[str, Any]:
     data: Dict[str, Any] = {
@@ -442,6 +695,8 @@ class ChatterboxTraceMixin:
     for key in ("volume", "flow_rate", "liquid_height", "blow_out_air_volume"):
       if channel_payload.get(key) is not None:
         compact[key] = channel_payload[key]
+    if channel_payload.get("liquid_transfer") is not None:
+      compact["liquid_transfer"] = channel_payload["liquid_transfer"]
     return compact
 
   def _compact_instruction_event(self, event: Dict[str, Any]) -> Dict[str, Any]:
@@ -452,6 +707,8 @@ class ChatterboxTraceMixin:
     for key in ("channel", "head", "phase", "simulated", "volume"):
       if key in event:
         compact[key] = event[key]
+    if "liquid_transfer" in event:
+      compact["liquid_transfer"] = event["liquid_transfer"]
     if "target" in event:
       compact["target"] = self._compact_target(event["target"])
     if "targets" in event:

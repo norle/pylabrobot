@@ -103,3 +103,40 @@ class ChatterboxBackendTests(unittest.IsolatedAsyncioTestCase):
     self.assertEqual(aspiration["channels"][0]["resource"], "plate_well_A1")
     self.assertEqual(len(aspiration["channels"][0]["target"]), 3)
     self.assertNotIn("resource_origin", aspiration["channels"][0])
+
+  async def test_liquid_tracking_composition_transfer(self):
+    self.backend.enable_liquid_tracking(True)
+    self.backend.set_liquid_tracking_state(
+      self.plate["A1"],
+      components={"dye": 20, "water": 80},
+      total_volume=100,
+    )
+    self.backend.set_liquid_tracking_state(
+      self.plate["A2"],
+      components={"water": 50},
+      total_volume=50,
+    )
+
+    await self.lh.pick_up_tips(self.tip_rack["A1"])
+    await self.lh.aspirate(self.plate["A1"], vols=[10])
+    await self.lh.dispense(self.plate["A2"], vols=[10])
+
+    state = self.backend.get_liquid_tracking_state()
+    source = state["resources"]["plate_well_A1"]
+    destination = state["resources"]["plate_well_A2"]
+    tip = state["tips"]["channel:0"]
+
+    self.assertAlmostEqual(source["total_volume"], 90.0)
+    self.assertAlmostEqual(source["components"]["dye"], 18.0)
+    self.assertAlmostEqual(source["components"]["water"], 72.0)
+    self.assertAlmostEqual(source["concentrations"]["dye"], 0.2)
+
+    self.assertAlmostEqual(destination["total_volume"], 60.0)
+    self.assertAlmostEqual(destination["components"]["dye"], 2.0)
+    self.assertAlmostEqual(destination["components"]["water"], 58.0)
+    self.assertAlmostEqual(destination["concentrations"]["dye"], 2.0 / 60.0)
+
+    self.assertAlmostEqual(tip["total_volume"], 0.0)
+
+    export = self.backend.export_for_simulation(compact=True)
+    self.assertIn("liquid_tracking", export)
