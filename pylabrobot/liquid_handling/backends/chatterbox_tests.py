@@ -104,6 +104,21 @@ class ChatterboxBackendTests(unittest.IsolatedAsyncioTestCase):
     self.assertEqual(len(aspiration["channels"][0]["target"]), 3)
     self.assertNotIn("resource_origin", aspiration["channels"][0])
 
+  async def test_export_for_gui(self):
+    await self.lh.pick_up_tips(self.tip_rack["A1"])
+    await self.lh.aspirate(self.plate["A1"], vols=[10])
+
+    export = self.backend.export_for_gui()
+    json.dumps(export)
+
+    self.assertEqual(export["schema_version"], "0.1.0")
+    self.assertIn("plr_version", export)
+    self.assertEqual(export["deck"]["root"], "deck")
+    self.assertIn("events", export)
+    self.assertIn("geometry", export)
+    self.assertEqual(export["geometry"]["root"], "deck")
+    self.assertIn("plate_well_A1", export["geometry"]["instances"])
+
   async def test_liquid_tracking_composition_transfer(self):
     self.backend.enable_liquid_tracking(True)
     self.backend.set_liquid_tracking_state(

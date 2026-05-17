@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict, List, Literal, Optional, Sequence, Union
 
+from pylabrobot.__version__ import __version__ as pylabrobot_version
 from pylabrobot.liquid_handling.standard import (
   Drop,
   DropTipRack,
@@ -16,7 +17,10 @@ from pylabrobot.liquid_handling.standard import (
   SingleChannelDispense,
 )
 from pylabrobot.resources import Container, Coordinate, Resource
+from pylabrobot.resources.geometry import generate_geometry_catalog
 from pylabrobot.resources.rotation import Rotation
+
+GUI_EXPORT_SCHEMA_VERSION = "0.1.0"
 
 PipettingOp = Union[Pickup, Drop, SingleChannelAspiration, SingleChannelDispense]
 Head96Op = Union[
@@ -137,6 +141,37 @@ class ChatterboxTraceMixin:
       include_firmware_commands=include_firmware_commands,
       liquid_tracking=liquid_tracking,
     )
+
+  def export_for_gui(
+    self,
+    include_geometry: bool = True,
+    include_firmware_commands: bool = False,
+    liquid_tracking: LiquidTrackingExportMode = "state",
+  ) -> Dict[str, Any]:
+    """Export a stable, versioned payload for GUI simulators and run reports.
+
+    This wrapper intentionally defaults to compact trace data because that is the preferred format
+    for playback and storage. The older :meth:`export_for_simulation` method remains available for
+    debug-style exports and backwards compatibility.
+    """
+
+    simulation = self.export_for_simulation(
+      include_deck_layout=True,
+      compact=True,
+      include_firmware_commands=include_firmware_commands,
+      liquid_tracking=liquid_tracking,
+    )
+    payload: Dict[str, Any] = {
+      "schema_version": GUI_EXPORT_SCHEMA_VERSION,
+      "plr_version": pylabrobot_version,
+      "deck": simulation["deck"],
+      "events": simulation["events"],
+    }
+    if include_geometry:
+      payload["geometry"] = generate_geometry_catalog(self.deck)
+    if "liquid_tracking" in simulation:
+      payload["liquid_tracking"] = simulation["liquid_tracking"]
+    return payload
 
   def get_deck_layout(self, include_children: bool = True) -> Dict[str, Any]:
     return self._resource_to_dict(self.deck, include_children=include_children)
