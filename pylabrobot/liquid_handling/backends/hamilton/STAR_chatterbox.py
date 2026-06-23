@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from typing import Dict, List, Literal, Optional, Union
 
 from pylabrobot.liquid_handling.backends import LiquidHandlerBackend
+from pylabrobot.liquid_handling.backends.chatterbox_trace import ChatterboxTraceMixin
 from pylabrobot.liquid_handling.backends.hamilton.STAR_backend import (
   DriveConfiguration,
   ExtendedConfiguration,
@@ -59,7 +60,7 @@ _DEFAULT_ISWAP_INFORMATION = iSWAPInformation(
 )
 
 
-class STARChatterboxBackend(STARBackend):
+class STARChatterboxBackend(ChatterboxTraceMixin, STARBackend):
   """Chatterbox backend for 'STAR'"""
 
   def __init__(
@@ -91,6 +92,7 @@ class STARChatterboxBackend(STARBackend):
         .iswap_installed` instead.
     """
     super().__init__()
+    self._init_trace()
     self._num_channels = num_channels
     self._iswap_parked = True
     self._sim_iswap_information = iswap_information  # None means use default at setup
@@ -149,6 +151,7 @@ class STARChatterboxBackend(STARBackend):
       skip_core96_head: If True, skip initializing the CoRe 96 head module, if applicable.
     """
     await LiquidHandlerBackend.setup(self)
+    self._record_setup_event()
 
     self.id_ = 0
 
@@ -176,6 +179,7 @@ class STARChatterboxBackend(STARBackend):
       self._iswap_information = None
 
   async def stop(self):
+    self._record_stop_event()
     await LiquidHandlerBackend.stop(self)
     self._setup_done = False
 
@@ -210,6 +214,82 @@ class STARChatterboxBackend(STARBackend):
   async def request_extended_configuration(self) -> ExtendedConfiguration:
     assert self._extended_conf is not None
     return self._extended_conf
+
+  async def pick_up_tips(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="pick_up_tips",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().pick_up_tips(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def drop_tips(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="drop_tips",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().drop_tips(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def aspirate(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="aspirate",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().aspirate(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def dispense(self, ops, use_channels, **backend_kwargs):
+    self._record_liquid_handler_operation(
+      action="dispense",
+      ops=ops,
+      use_channels=use_channels,
+      backend_kwargs=backend_kwargs,
+    )
+    await super().dispense(ops=ops, use_channels=use_channels, **backend_kwargs)
+
+  async def pick_up_tips96(self, pickup, **backend_kwargs):
+    self._record_head96_operation(
+      action="pick_up_tips96",
+      op=pickup,
+      resource=pickup.resource,
+      extra={"tips": len([tip for tip in pickup.tips if tip is not None]), **backend_kwargs},
+    )
+    await super().pick_up_tips96(pickup=pickup, **backend_kwargs)
+
+  async def drop_tips96(self, drop, **backend_kwargs):
+    self._record_head96_operation(
+      action="drop_tips96",
+      op=drop,
+      resource=drop.resource,
+      extra=backend_kwargs,
+    )
+    await super().drop_tips96(drop=drop, **backend_kwargs)
+
+  async def aspirate96(self, aspiration, **backend_kwargs):
+    resource = aspiration.wells[0].parent if hasattr(aspiration, "wells") else aspiration.container
+    assert resource is not None
+    self._record_head96_operation(
+      action="aspirate96",
+      op=aspiration,
+      resource=resource,
+      extra={"volume": aspiration.volume, **backend_kwargs},
+    )
+    await super().aspirate96(aspiration=aspiration, **backend_kwargs)
+
+  async def dispense96(self, dispense, **backend_kwargs):
+    resource = dispense.wells[0].parent if hasattr(dispense, "wells") else dispense.container
+    assert resource is not None
+    self._record_head96_operation(
+      action="dispense96",
+      op=dispense,
+      resource=resource,
+      extra={"volume": dispense.volume, **backend_kwargs},
+    )
+    await super().dispense96(dispense=dispense, **backend_kwargs)
 
   # # # # # # # # 1_000 uL Channel: Basic Commands # # # # # # # #
 

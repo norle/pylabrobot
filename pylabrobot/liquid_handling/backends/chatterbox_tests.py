@@ -1,9 +1,11 @@
+import json
 import unittest
 
 from pylabrobot.liquid_handling import LiquidHandler
 from pylabrobot.liquid_handling.backends.chatterbox import (
   LiquidHandlerChatterboxBackend,
 )
+from pylabrobot.liquid_handling.backends.hamilton.STAR_chatterbox import STARChatterboxBackend
 from pylabrobot.resources import (
   Coordinate,
   Cor_96_wellplate_360ul_Fb,
@@ -65,3 +67,57 @@ class ChatterboxBackendTests(unittest.IsolatedAsyncioTestCase):
 
   async def test_move(self):
     await self.lh.move_resource(self.plate, Coordinate(0, 0, 0))
+
+  async def test_export_for_simulation_with_planned_xyz_targets(self):
+    await self.lh.pick_up_tips(self.tip_rack["A1"])
+    await self.lh.aspirate(self.plate["A1"], vols=[10])
+
+    export = self.backend.export_for_simulation()
+    json.dumps(export)
+
+    self.assertEqual(export["schema_version"], "0.1.0")
+    self.assertEqual(export["coordinate_frame"], "deck")
+    self.assertEqual(export["deck"]["root"], "deck")
+    self.assertIn("tip_rack", export["deck"]["resources"])
+    self.assertIn("plate_well_A1", export["deck"]["resources"])
+
+    operation_events = [event for event in export["events"] if event["event"] == "operation"]
+    aspiration = next(event for event in operation_events if event["action"] == "aspirate")
+    channel = aspiration["channels"][0]
+    self.assertEqual(channel["channel"], 0)
+    self.assertEqual(channel["resource"], "plate_well_A1")
+    self.assertEqual(len(channel["target"]), 3)
+    self.assertEqual(channel["coordinate_source"], "planned_destination")
+    self.assertNotIn("resource_origin", channel)
+
+  async def test_clear_trace(self):
+    await self.lh.pick_up_tips(self.tip_rack["A1"])
+    self.assertGreater(len(self.backend.get_trace()), 0)
+
+    self.backend.clear_trace()
+
+    self.assertEqual(self.backend.get_trace(), [])
+
+  async def test_star_chatterbox_exports_planned_xyz_targets(self):
+    deck = STARLetDeck()
+    backend = STARChatterboxBackend()
+    lh = LiquidHandler(backend, deck=deck)
+    tip_rack = hamilton_96_tiprack_1000uL_filter(name="star_tip_rack")
+    plate = Cor_96_wellplate_360ul_Fb(name="star_plate")
+    deck.assign_child_resource(tip_rack, rails=3)
+    deck.assign_child_resource(plate, rails=9)
+
+    await lh.setup()
+    try:
+      await lh.pick_up_tips(tip_rack["A1"])
+      await lh.aspirate(plate["A1"], vols=[10])
+    finally:
+      await lh.stop()
+
+    export = backend.export_for_simulation()
+    json.dumps(export)
+    operation_events = [event for event in export["events"] if event["event"] == "operation"]
+    aspiration = next(event for event in operation_events if event["action"] == "aspirate")
+    self.assertEqual(aspiration["channels"][0]["resource"], "star_plate_well_A1")
+    self.assertEqual(len(aspiration["channels"][0]["target"]), 3)
+    self.assertEqual(aspiration["channels"][0]["coordinate_source"], "planned_destination")
