@@ -74,8 +74,13 @@ class ChatterboxBackendTests(unittest.IsolatedAsyncioTestCase):
 
     export = self.backend.export_for_simulation()
     json.dumps(export)
+    simulation = self.backend.get_simulation()
+    deck_snapshot = self.backend.get_deck_snapshot()
 
     self.assertEqual(export["schema_version"], "0.1.0")
+    self.assertEqual(simulation, export)
+    self.assertEqual(deck_snapshot["coordinate_frame"], "deck")
+    self.assertIn("tip_rack", deck_snapshot["resources"])
     self.assertEqual(export["coordinate_frame"], "deck")
     self.assertEqual(export["deck"]["root"], "deck")
     self.assertIn("tip_rack", export["deck"]["resources"])

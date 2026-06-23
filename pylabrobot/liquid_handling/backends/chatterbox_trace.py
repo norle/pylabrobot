@@ -43,6 +43,18 @@ class ChatterboxTraceMixin:
     """Return a JSON-serializable copy of recorded chatterbox trace events."""
     return copy.deepcopy(self._trace_events)
 
+  def get_deck_snapshot(self) -> Dict[str, Any]:
+    """Return a JSON-serializable snapshot of the current deck layout."""
+    return {
+      "name": self.deck.name,
+      "coordinate_frame": "deck",
+      "resources": self.get_compact_deck_layout(),
+    }
+
+  def get_simulation(self) -> Dict[str, Any]:
+    """Return stable trace and deck data for downstream simulators."""
+    return self.export_for_simulation(include_deck_layout=True)
+
   def export_for_simulation(self, include_deck_layout: bool = True) -> Dict[str, Any]:
     """Export planned operation targets and optional deck geometry.
 
