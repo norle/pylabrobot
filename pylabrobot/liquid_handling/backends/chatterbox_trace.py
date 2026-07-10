@@ -97,6 +97,8 @@ class ChatterboxTraceMixin:
       "operation",
       action=action,
       coordinate_source="planned_destination",
+      channel_states=self._channel_tip_states(use_channels),
+      active_channels=len(use_channels),
       channels=[
         self._op_to_channel_payload(op=op, channel=channel)
         for op, channel in zip(ops, use_channels)
@@ -116,11 +118,27 @@ class ChatterboxTraceMixin:
       action=action,
       head="head96",
       coordinate_source="planned_destination",
+      channel_states=self._head96_tip_states(),
+      active_channels=sum(state["has_tip"] for state in self._head96_tip_states()),
       resource=self._resource_brief(resource),
       offset=self._coordinate_values(op.offset),
       target=self._coordinate_values(self._resource_target(resource=resource, offset=op.offset)),
       extra=extra or {},
     )
+
+  def _channel_tip_states(self, channels: Sequence[int]) -> List[Dict[str, Any]]:
+    """Return PLR's current tip state for the channels in an operation."""
+    return [
+      {"channel": channel, "has_tip": bool(self.head[channel].has_tip)}
+      for channel in channels
+    ]
+
+  def _head96_tip_states(self) -> List[Dict[str, Any]]:
+    """Return PLR's current tip state for every 96-head channel."""
+    return [
+      {"channel": channel, "has_tip": bool(self.head96[channel].has_tip)}
+      for channel in range(96)
+    ]
 
   def _op_to_channel_payload(self, op: PipettingOp, channel: int) -> Dict[str, Any]:
     payload: Dict[str, Any] = {
