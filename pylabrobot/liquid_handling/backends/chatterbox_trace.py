@@ -113,13 +113,14 @@ class ChatterboxTraceMixin:
     resource: Resource,
     extra: Optional[Dict[str, Any]] = None,
   ) -> None:
+    channel_states = self._head96_tip_states()
     self._record_event(
       "operation",
       action=action,
       head="head96",
       coordinate_source="planned_destination",
-      channel_states=self._head96_tip_states(),
-      active_channels=sum(state["has_tip"] for state in self._head96_tip_states()),
+      channel_states=channel_states,
+      active_channels=sum(state["has_tip"] for state in channel_states),
       resource=self._resource_brief(resource),
       offset=self._coordinate_values(op.offset),
       target=self._coordinate_values(self._resource_target(resource=resource, offset=op.offset)),

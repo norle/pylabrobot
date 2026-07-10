@@ -99,6 +99,20 @@ class ChatterboxBackendTests(unittest.IsolatedAsyncioTestCase):
     self.assertTrue(all(state["has_tip"] for state in operations[0]["channel_states"]))
     self.assertTrue(all(state["has_tip"] for state in operations[1]["channel_states"]))
 
+  async def test_head96_tip_state_is_computed_once_per_event(self):
+    calls = 0
+    original = self.backend._head96_tip_states
+
+    def counted_states():
+      nonlocal calls
+      calls += 1
+      return original()
+
+    self.backend._head96_tip_states = counted_states
+    await self.lh.pick_up_tips96(self.tip_rack)
+
+    self.assertEqual(calls, 1)
+
   async def test_move(self):
     await self.lh.move_resource(self.plate, Coordinate(0, 0, 0))
 
